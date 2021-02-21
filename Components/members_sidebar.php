@@ -95,7 +95,8 @@ echo '
             }
             $data = get_member_info($_GET['member']);
             $pay = get_cur_pay_info($_GET['member']);
-            echo '<div class="container p-2" style="background-color:orange">
+            echo '
+                  <div class="container p-2" style="background-color:orange;border-top-right-radius:5px;border-top-left-radius:5px">
                     <h2 style="color:white;">Member Information</h2></div>
                   <div class="container pl-3 pt-3" style="background-color:white;height:140px">
                     <div class="d-flex col-12 flex-row justify-content-between">
@@ -156,11 +157,11 @@ if(isset($_GET['member'])){
 
     echo '
         <div class="col-12 mb-5 b-2">                  
-            <div class="col-12 p-2" style="background-color:orange">
-            <h2 style="color:white;">Past Fee Information</h2></div>
+            <div class="col-12 p-2" style="background-color:orange;border-top-right-radius:5px;border-top-left-radius:5px">
+            <h2 class="ml-2"style="color:white;">Past Fee Information</h2></div>
 
             <div class="col-12 p-2" style="background-color:white;">
-            <p style="font-size:16">The table gives all the past fee payment of the memeber:</p>            
+            <p class="ml-3"style="font-size:16">The table gives all the past fee payment of the memeber:</p>            
             <table class="table table-bordered">
                 <thead>
                 <tr>
