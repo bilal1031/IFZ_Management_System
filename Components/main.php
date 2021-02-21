@@ -16,7 +16,7 @@
               Advanced Options
             </button>
             <div class="dropdown-menu">
-            <a class="dropdown-item" href="index.php?option=paid">Paid Members</a>
+            <a class="dropdown-item"  href="index.php?option=paid">Paid Members</a>
              <a class="dropdown-item" href="index.php?option=unpaid">Unpaid Members</a>
              <a class="dropdown-item" href="index.php?option=all">All Members</a>
             </div>

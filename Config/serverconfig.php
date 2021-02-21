@@ -2,7 +2,7 @@
             $servername = "localhost";
             $username = "root";
             $password = "";
-            $dbname = "al_com_dealer";
+            $dbname = "gymdb";
         
             $conn = new mysqli($servername, $username, $password, $dbname);       
             if ($conn->connect_error) {
