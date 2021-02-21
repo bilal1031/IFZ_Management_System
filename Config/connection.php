@@ -47,15 +47,32 @@
         include "serverconfig.php";
         $sql = "SELECT max(f_id) as f_id from fee";
         $result = mysqli_query($conn, $sql);
+        
         $row = $result->fetch_assoc();
-        echo $row['f_id'];
         $sql = 'INSERT INTO payment(m_id,f_id,is_paid) VALUES('.$mid.','.$row['f_id'].','.$value.')';
         mysqli_query($conn, $sql);
-
 
     }
     function add_fee($month,$year,$fee){
         include "serverconfig.php";
+        
+        $sql = "SELECT max(f_id) as f_id from fee";
+        $result = mysqli_query($conn, $sql);
+        $row = $result->fetch_assoc();
+
+        $sql = 'select m_id from payment where f_id < '.$row['f_id'].' group by m_id';
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) > 0) {
+            while($row = $result->fetch_assoc()){
+     
+                $sql = "insert into payment(m_id,f_id,is_paid) values (".$row['m_id'].",(select max(f_id)-1 from fee),0)";
+                if(mysqli_query($conn, $sql)){
+                
+                }   
+            }
+        }else{
+            echo "not";
+        }
         $sql = 'INSERT INTO fee(month,year,fee) VALUES("'.$month.'","'.$year.'",'.$fee.')';
         if(mysqli_query($conn, $sql)){
             echo '<div class="alert alert-success container col-8 p-3" role="alert" style="bacground-color:orange">
