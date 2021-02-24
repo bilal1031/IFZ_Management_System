@@ -18,36 +18,14 @@
             <div class="dropdown-menu">
             <a class="dropdown-item"  href="index.php?option=paid">Paid Members</a>
              <a class="dropdown-item" href="index.php?option=unpaid">Unpaid Members</a>
-             <a class="dropdown-item" href="index.php?option=all">All Members</a>
             </div>
           </div>
     </div>
     
         <?php
             if(isset($_POST['submit'])){
-                                
-                $sql = 'SELECT p_id,name,purchaseprice,saleprice,c_name FROM product INNER JOIN category ON c_id = category AND (name LIKE "%'.$_POST['search'].'%" OR c_name LIKE "%'.$_POST['search'].'%")';
-                get_data($sql,"main",false);  
-            
-                    
-            }else if(isset($_GET['category'])){
-                    $cat =  $_GET['category'];
-                    if($cat == "allitems"){
-                        $sql = 'SELECT p_id,name,purchaseprice,saleprice,c_name FROM product INNER JOIN category ON c_id = category ORDER BY category;';               
-                    }else{
-                        $sql = 'SELECT p_id,name,purchaseprice,saleprice,c_name FROM product INNER JOIN category ON c_id = category AND c_name = "'.$cat.'";';
-                    
-                    }
-                get_data($sql,"main",false);
-
-            }else if(isset($_POST['delete'])){
-                    $sql = 'DELETE FROM product WHERE p_id = "'.$_POST['p_id'].'";';
-                    delete_data($sql);
-                    $cat =  $_POST['category'];
-                    $sql = 'SELECT p_id,name,purchaseprice,saleprice,c_name FROM product INNER JOIN category ON c_id = category AND c_name = "'.$cat.'";';
-                    get_data($sql);     
-            }else if(isset($_POST['asubmit'])){
-                $sql = 'SELECT p_id,name,purchaseprice,saleprice,c_name FROM product INNER JOIN category ON c_id = category AND (name LIKE "%'.$_POST['search'].'%" OR c_name LIKE "%'.$_POST['search'].'%")';
-                get_data($sql,"main",true);  
+                    get_member($_POST['search']);
+            }else if (isset($_GET['option'])){
+                    get_specific_members($_GET['option']);
             }
    ?>

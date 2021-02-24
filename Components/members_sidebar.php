@@ -127,25 +127,7 @@ echo '
             Members
             </a>';
             get_members();
-            echo '
-            <a type="button" class="list-group-item list-group-item-action p-2" href="'.$_SERVER['PHP_SELF'].'?member=Ali Asad">
-                <div class="d-flex flex-row justify-content-between align-items-center">
-                    <div class="col-3 justify-content-between"><span>Ali Asad</span></div>                 
-                    <div class="col-3 justify-content-between">
-                    <span><b>Fee:</b></span>                 
-                    <button class=" btn btn-danger ml-1" disabled>Not Paid</button>                 
-                    </div>
-                </div>
-            </a>
-            <a type="button" class="list-group-item list-group-item-action p-2">
-                <div class="d-flex flex-row justify-content-between align-items-center">
-                    <div class="col-3 justify-content-between"><span>Muhammad Bilal</span></div>    
-                    <div class="col-3 justify-content-between">
-                    <span><b>Fee:</b></span>                 
-                    <button class=" btn btn-success ml-1" disabled>Paid</button>                 
-                    </div>
-                </div>
-            </a>
+            echo ' 
             </div>';
         }
         echo '
@@ -154,7 +136,9 @@ echo '
 </div>';
 if(isset($_GET['member'])){
     $member = $_GET['member'];
-
+    if(isset($_POST['set_paid'])){
+        update_payment($_POST['p_id'],$_POST['f_id']);
+    }
     echo '
         <div class="col-12 mb-5 b-2">                  
             <div class="col-12 p-2" style="background-color:orange;border-top-right-radius:5px;border-top-left-radius:5px">
