@@ -92,12 +92,19 @@ echo '
         }else if(isset($_GET['member'])){
             if(isset($_POST['payment'])){
                 set_payment(1,$_GET['member']);
-            }
+            }else if (isset($_POST['delete'])){
+              delete_member($_POST['m_id']);
+          }
             $data = get_member_info($_GET['member']);
             $pay = get_cur_pay_info($_GET['member']);
             echo '
-                  <div class="container p-2" style="background-color:orange;border-top-right-radius:5px;border-top-left-radius:5px">
-                    <h2 style="color:white;">Member Information</h2></div>
+                  <div class="container d-flex p-2 flex-row justify-content-between" style="background-color:orange;border-top-right-radius:5px;border-top-left-radius:5px">
+                    <h2 style="color:white;">Member Information</h2>
+                    <form action="'.$_SERVER['PHP_SELF'].'?member='.$_GET['member'].'" method="post" class="mr-3">
+                                <input name="m_id" type="hidden" value="'.$_GET['member'].'"/>
+                                <button class=" btn btn-danger ml-2" name="delete">Delete</button>
+                    </form>
+                    </div>
                   <div class="container pl-3 pt-3" style="background-color:white;height:140px">
                     <div class="d-flex col-12 flex-row justify-content-between">
                         <h5>Name: '.$data['name'].'</h5>
@@ -131,10 +138,11 @@ echo '
             </div>';
         }
         echo '
-        
+
          </div>
         
-</div>';
+</div>
+<div style="height:50px"></div>';
 if(isset($_GET['member'])){
     $member = $_GET['member'];
     if(isset($_POST['set_paid'])){

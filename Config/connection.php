@@ -1,7 +1,29 @@
 <?php
+    function get_attendence($mid){
+        include "serverconfig.php";
+        $sql = "select 1 as verified from attendence where m_id= ".$mid." and date = '".date('y-m-d')."'";
+        $result = mysqli_query($conn, $sql);
+        $row = $result->fetch_assoc();
+        if(isset($row)){
+            if($row['verified']){
+                return true;
+            }else{
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+    function save_att($mid){
+        include "serverconfig.php";
+        $sql = "insert into attendence(m_id,date,has_attented) values(".$mid.",'".date("y-m-d")."',1)";
+        if(mysqli_query($conn, $sql)){
+        
+        }
+    }
     function get_member($search){
         include "serverconfig.php";
-        $sql = "SELECT member.*,is_paid from member inner join payment on member.m_id = payment.m_id and name like '%".$search."%' and payment.f_id = (select max(f_id) from fee)";
+        $sql = "select member.* from member where name like '%".$search."%'";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
             echo '  
@@ -10,6 +32,8 @@
             <a type="button" class="list-group-item list-group-item-action disabled active" style="background-color:orange; border:none;font-weight:bold">
             Member';
             while($row = $result->fetch_assoc()) {
+               $attendence = get_attendence($row['m_id']);
+               
                 echo '<a type="button" class="list-group-item list-group-item-action p-2" href="memberspage.php?member='.$row['m_id'].'">
                 <div class="d-flex flex-row justify-content-between align-items-center">
                     <div class="col-3 justify-content-between"><span>'.$row['name'].'</span></div>  
@@ -19,25 +43,17 @@
                             <span><b>Attendence of '.date('y-m-d').':</b></span> 
                             <input type="hidden" name="name"   value="'.$row['name'].'"/>
                             <input type="hidden" name="m_id"   value="'.$row['m_id'].'"/>';
-                        if(true){
-                            echo ' <button class=" btn btn-success ml-1" name="attendence">Save</button> ';
+                        if($attendence){
+                            echo ' <button class=" btn btn-success ml-1" disabled name="attendence">Saved</button>';
                         }else{
-                            echo ' <button class=" btn btn-success ml-1" disbled name="attendence">Save</button>';
+                            echo ' <button class=" btn btn-success ml-1" name="attendence">Save</button> ';
+                           
                         }
                            
                     echo'   
                           </form>
                      </div>';
                     echo '               
-                    <div class="col-3 justify-content-between">
-                    <span><b>Fee:</b></span> ';
-                    if($row['is_paid']){
-                        echo '<button class=" btn btn-success ml-1" disabled>Paid</button> ';
-                    }else{
-                        echo '<button class=" btn btn-danger ml-1" disabled>Not Paid</button> ';
-                    }             
-                                                
-                echo '       </div>
                             </div>
                     </a>';
             }   
@@ -168,14 +184,16 @@
     }
     function get_specific_members($type){
         include "serverconfig.php";
-        $check;
+        $ispaid;
+        $sql = "";
         if($type == 'paid'){
-            $check = 1;
+            $sql = 'select member.*,is_paid from member inner join payment on member.m_id = payment.m_id and payment.is_paid = 1
+                    and payment.f_id = (select max(f_id) from fee);';
+                   
         }else{
-            $check = 0;
+            $sql = "select member.name,m_id from member where m_id != all (select member.m_id from member inner join payment on member.m_id = payment.m_id and payment.is_paid = 0 and payment.f_id = (select max(f_id) from fee))";    
         }
 
-        $sql = "SELECT member.*,is_paid from member left JOIN payment on member.m_id = payment.m_id and f_id = (select max(f_id) from fee) and is_paid = ".$check."";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
             echo '   
@@ -190,7 +208,13 @@
                     <div class="col-3 justify-content-between"><span>'.$row['name'].'</span></div>                 
                     <div class="col-3 justify-content-between">
                     <span><b>Fee:</b></span> ';
-                    if($row['is_paid']){
+                    if($type == 'paid'){                       
+                       $ispaid = $row['is_paid'];
+                    }else{
+                       $ispaid = 0;
+                    }
+                    
+                    if($ispaid){
                         echo '<button class=" btn btn-success ml-1" disabled>Paid</button> ';
                     }else{
                         echo '<button class=" btn btn-danger ml-1" disabled>Not Paid</button> ';
@@ -285,8 +309,11 @@
                              }
                              if($row['month'] == '12'){
                                  $count++;
-                                 echo '</tr><tr>
-                                 <td><b>'.$year[$count].'</b></td>';
+                                 if(isset($year[$count])){
+                                    echo '</tr><tr>
+                                    <td><b>'.$year[$count].'</b></td>';
+                                 }
+                                
                                  
                              }
                              
@@ -301,6 +328,14 @@
                 }
                 
             }
+        }
+    }
+    function  delete_member($mid){
+        include "serverconfig.php";
+        $sql = "delete from member where m_id = ".$mid.""; 
+        if(mysqli_query($conn, $sql)){
+            header("Location:memberspage.php");
+            exit();
         }
     }
 ?>

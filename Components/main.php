@@ -27,5 +27,8 @@
                     get_member($_POST['search']);
             }else if (isset($_GET['option'])){
                     get_specific_members($_GET['option']);
+            }else if(isset($_POST['attendence'])){
+                    save_att($_POST['m_id']);
+                    get_member($_POST['name']);
             }
    ?>
