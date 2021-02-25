@@ -1,7 +1,7 @@
 <?php
     function get_member($search){
         include "serverconfig.php";
-        $sql = "SELECT member.*,is_paid from member inner join payment on member.m_id = payment.m_id and name like '%bilal%' and payment.f_id = (select max(f_id) from fee)";
+        $sql = "SELECT member.*,is_paid from member inner join payment on member.m_id = payment.m_id and name like '%".$search."%' and payment.f_id = (select max(f_id) from fee)";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
             echo '  
@@ -45,7 +45,8 @@
             </div>
            
    </div>
-   </div> ';
+   </div>
+   <div style="height:50px"></div> ';
         }
     }
     function register_member($name,$number){
@@ -166,7 +167,45 @@
         
     }
     function get_specific_members($type){
+        include "serverconfig.php";
+        $check;
+        if($type == 'paid'){
+            $check = 1;
+        }else{
+            $check = 0;
+        }
 
+        $sql = "SELECT member.*,is_paid from member left JOIN payment on member.m_id = payment.m_id and f_id = (select max(f_id) from fee) and is_paid = ".$check."";
+        $result = mysqli_query($conn, $sql);
+        if (mysqli_num_rows($result) > 0) {
+            echo '   
+            <div class="container col-8 mt-5 mb-5">
+            <div class="list-group">
+            <a type="button" class="list-group-item list-group-item-action disabled active" style="background-color:orange; border:none;font-weight:bold">
+            Members
+            </a>';
+            while($row = $result->fetch_assoc()) {
+                echo '<a type="button" class="list-group-item list-group-item-action p-2" href="memberspage.php?member='.$row['m_id'].'">
+                <div class="d-flex flex-row justify-content-between align-items-center">
+                    <div class="col-3 justify-content-between"><span>'.$row['name'].'</span></div>                 
+                    <div class="col-3 justify-content-between">
+                    <span><b>Fee:</b></span> ';
+                    if($row['is_paid']){
+                        echo '<button class=" btn btn-success ml-1" disabled>Paid</button> ';
+                    }else{
+                        echo '<button class=" btn btn-danger ml-1" disabled>Not Paid</button> ';
+                    }             
+                                    
+    echo '       </div>
+                </div>
+          </a>';
+            }
+            echo ' 
+            </div>
+            </div>
+            <div style="height:50px"></div>
+            ';
+        }
     }
     function update_payment($pid,$fid){
         include "serverconfig.php";
@@ -183,10 +222,11 @@
         $result = mysqli_query($conn, $sql);
         $row = $result->fetch_assoc();
         $diff = $row['month'];
-        $sql = "select fee.fee from fee inner join payment on fee.f_id = payment.f_id and m_id = ".$mid."";
+        $sql = "select fee.fee,month from fee inner join payment on fee.f_id = payment.f_id and m_id = ".$mid."";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
-            echo '<tr style="background-color:grey">
+
+            /*echo '<tr style="background-color:grey">
                         <th>Fee</th>';
                         for($i = 1;$i<$diff;$i++){
                             echo ' <td></td>';
@@ -196,8 +236,9 @@
                         <th>'.$row['fee'].'</th>
                    ';
             }   
+     
             echo '</tr>
-            <tr>';
+            <tr>';*/
 
             $sql = "select fee.year from fee inner join payment on fee.f_id = payment.f_id and m_id = ".$mid." group by year;";
             $result = mysqli_query($conn, $sql);
@@ -214,25 +255,28 @@
                     <tr>
                      <td><b>'.$year[$count].'</b></td>';
                     
-                 $sql = "select month,name,payment.is_paid,p_id,payment.m_id,fee.f_id from fee inner join payment on fee.f_id = payment.f_id inner join member on payment.m_id = member.m_id and member.m_id = ".$mid.";";
+                 $sql = "select month,name,payment.is_paid,p_id,payment.m_id,fee.f_id,fee.fee from fee inner join payment on fee.f_id = payment.f_id inner join member on payment.m_id = member.m_id and member.m_id = ".$mid.";";
                  $result = mysqli_query($conn, $sql); 
                  if (mysqli_num_rows($result) > 0) {
                      
                      for($i = 1;$i<$diff;$i++){
-                         echo '<td><button class=" btn btn-info ml-2" disabled>Null</button></td>';
+                         echo '<td><button class=" btn btn-info ml-2" disabled></br>Null</br></br> </button></td>';
                      }
                      while($row = $result->fetch_assoc()) {
 
                              if($row['is_paid'] != null){
                                  if($row['is_paid']){
-                                     echo '<td><button class=" btn btn-success ml-2" disabled>Fee Paid</button></td>';
+                                     echo '<td>
+                                            <button class=" btn btn-success ml-2" disabled><b>'.$row['fee'].'</b> <br/><br/>Paid</button></td>';
                                  }else{
 
                                      echo '<td>
+                                          
                                              <form action="'.$_SERVER['PHP_SELF'].'?member='.$row['m_id'].'" method="post">
                                              <input type="hidden" name= "f_id" value="'.$row['f_id'].'"/>
                                              <input type="hidden" name= "p_id" value="'.$row['p_id'].'"/>
-                                             <button class=" btn btn-danger ml-2" name="set_paid">Not Paid</button>
+                                             <button class=" btn btn-danger ml-2 " name="set_paid">'.$row['fee'].'
+                                             <br/> Not<br/> Paid</button>
                                              </form>
                                          </td>';
                                  }
