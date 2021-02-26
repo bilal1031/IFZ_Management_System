@@ -380,7 +380,7 @@
                 array_push($data,0);
                 return $data;
                }
-               array_push($data,(float) ($acount/$ascount)*100);
+               array_push($data,number_format((float) ($acount/$ascount)*100));
                array_push($data, $row['notattented']);
                array_push($data,$acount);
             }

@@ -1,4 +1,5 @@
 <?php
+    ob_start();
     include "./Config/connection.php";
     $active = array("active","","","");
     if(isset($_GET['mode'])){
@@ -13,16 +14,16 @@
             $active[2] = "active";
             $active[0] = "";
             $active[3] = "";
-        }elseif($get == 'payment'){
-            $active[1] = "";
-            $active[2] = "";
-            $active[0] = "active";
-            $active[3] = "";
-        }else{
+        }elseif($get == 'attendence'){
             $active[1] = "";
             $active[2] = "";
             $active[0] = "";
             $active[3] = "active";
+        }else{
+            $active[1] = "";
+            $active[2] = "";
+            $active[0] = "active";
+            $active[3] = "";
 
         }
     }
@@ -37,35 +38,25 @@ echo '
             <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[0].'" href="'.$_SERVER['PHP_SELF'].'">
             <i class="fa fa-user" style="font-size:24px;"></i>
             Members</a>
+
             <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[1].'" href="'.$_SERVER['PHP_SELF'].'?mode=registration">
             <i class="fa fa-check-square" style="font-size:24px;"></i>
             Registration</a>
-            <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[2].'" href="'.$_SERVER['PHP_SELF'].'?mode=payment">
-            <i class="fa fa-usd" aria-hidden="true"></i>
-            Payment Management</a>
+        
             <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[3].'" href="'.$_SERVER['PHP_SELF'].'?mode=attendence">
             <i class="fa fa-save" aria-hidden="true"></i>
             Attendence</a>
-            </div>        
+
+            <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[2].'" href="'.$_SERVER['PHP_SELF'].'?mode=payment">
+            <i class="fa fa-usd" aria-hidden="true"></i>
+            Payment Management</a>
+     
+            </div>    
         </div>
         <div class="col-9 mb-5">           
         ';
         if(isset($_GET['mode'])){
-             if($_GET['mode'] == 'attendence'){
-              if(isset($_POST['asubmit'])){
-               tsave_att();
-              }
-              echo '
-              <div class="container col-8 p-3" style="background-color:orange">
-              <h2 style="color:white;">Save Total Attendence</h2></div>       
-              <div class="container col-8 p-4" style="background-color:white;" >
-                <form action="'.$_SERVER['PHP_SELF'].'?mode=attendence" method="post">
-                  <button type="submit" name="asubmit" class="btn btn-success col-2">Save</button>
-                </form>
-              </div>
-              <div style="height:50px"></div>
-              ';
-             }else if($_GET['mode'] == 'registration'){
+          if($_GET['mode'] == 'registration'){
                 if(isset($_POST['submit'])){
                     register_member($_POST['member_name'],$_POST['number']);
                 }
@@ -114,7 +105,21 @@ echo '
                 <div style="height:50px"></div>
                 ';
                
-            }
+            }else if($_GET['mode'] == 'attendence'){
+              if(isset($_POST['asubmit'])){
+               tsave_att();
+              }
+              echo '
+              <div class="container col-8 p-3" style="background-color:orange">
+              <h2 style="color:white;">Save Total Attendence</h2></div>       
+              <div class="container col-8 p-4" style="background-color:white;" >
+               <form action="'.$_SERVER['PHP_SELF'].'?mode=attendence" method="post">
+               <button type="submit" name="asubmit" class="btn btn-success col-2">Save</button>
+               </form>
+              </div>
+              <div style="height:50px"></div>
+              ';
+             }
         }else if(isset($_GET['member'])){
             if(isset($_POST['payment'])){
                 set_payment(1,$_GET['member']);
@@ -221,4 +226,5 @@ if(isset($_GET['member'])){
         
         ';
 }
+ob_end_flush();
 ?>
