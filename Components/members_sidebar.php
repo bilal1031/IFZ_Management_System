@@ -1,20 +1,29 @@
 <?php
     include "./Config/connection.php";
-    $active = array("active","","");
+    $active = array("active","","","");
     if(isset($_GET['mode'])){
         $get = $_GET['mode'];
         if($get == 'registration'){
             $active[1] = "active";
             $active[2] = "";
             $active[0] = "";
+            $active[3] = "";
         }else if($get == 'payment'){
             $active[1] = "";
             $active[2] = "active";
             $active[0] = "";
-        }else{
+            $active[3] = "";
+        }elseif($get == 'payment'){
             $active[1] = "";
             $active[2] = "";
             $active[0] = "active";
+            $active[3] = "";
+        }else{
+            $active[1] = "";
+            $active[2] = "";
+            $active[0] = "";
+            $active[3] = "active";
+
         }
     }
         
@@ -34,12 +43,29 @@ echo '
             <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[2].'" href="'.$_SERVER['PHP_SELF'].'?mode=payment">
             <i class="fa fa-usd" aria-hidden="true"></i>
             Payment Management</a>
-            </div>
+            <a type="button" class="list-group-item list-group-item-action list-group-item-dark '.$active[3].'" href="'.$_SERVER['PHP_SELF'].'?mode=attendence">
+            <i class="fa fa-save" aria-hidden="true"></i>
+            Attendence</a>
+            </div>        
         </div>
         <div class="col-9 mb-5">           
         ';
         if(isset($_GET['mode'])){
-            if($_GET['mode'] == 'registration'){
+             if($_GET['mode'] == 'attendence'){
+              if(isset($_POST['asubmit'])){
+               tsave_att();
+              }
+              echo '
+              <div class="container col-8 p-3" style="background-color:orange">
+              <h2 style="color:white;">Save Total Attendence</h2></div>       
+              <div class="container col-8 p-4" style="background-color:white;" >
+                <form action="'.$_SERVER['PHP_SELF'].'?mode=attendence" method="post">
+                  <button type="submit" name="asubmit" class="btn btn-success col-2">Save</button>
+                </form>
+              </div>
+              <div style="height:50px"></div>
+              ';
+             }else if($_GET['mode'] == 'registration'){
                 if(isset($_POST['submit'])){
                     register_member($_POST['member_name'],$_POST['number']);
                 }
@@ -104,8 +130,8 @@ echo '
                                 <input name="m_id" type="hidden" value="'.$_GET['member'].'"/>
                                 <button class=" btn btn-danger ml-2" name="delete">Delete</button>
                     </form>
-                    </div>
-                  <div class="container pl-3 pt-3" style="background-color:white;height:140px">
+                  </div>
+                  <div class="container pl-3 pt-3" style="background-color:white;height:180px">
                     <div class="d-flex col-12 flex-row justify-content-between">
                         <h5>Name: '.$data['name'].'</h5>
                         <h5>Contact Number: '.$data['contact_number'].'</h5>
@@ -122,9 +148,16 @@ echo '
                                 <button class=" btn btn-danger ml-2" name="payment">Not Paid</button>
                               </form>';
                     }
-
-             echo'   </div>
-                    </div>
+            $atinfo = get_att($_GET['member']);   
+             echo' 
+                     </div>
+                     <h5>Current Month Attendence:</h5>
+                     <div class="progress">
+                     <div class="progress-bar" role="progressbar" aria-valuenow="70"
+                        aria-valuemin="0" aria-valuemax="100" style="width:'.$atinfo[0].'%;">
+                        '.$atinfo[0].'% Presents('.$atinfo[2].') Absents('.$atinfo[1].')
+                     </div>
+                   </div>                    </div>
                 </div>
                  '; 
         }else{

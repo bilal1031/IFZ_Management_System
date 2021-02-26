@@ -338,5 +338,49 @@
             exit();
         }
     }
+    function tsave_att(){
+        include "serverconfig.php";
+        $sql = "select m_id from member where m_id != all (select m_id from attendence where has_attented = 1 and date = ".date("y-m-d").");"; 
+        $result = mysqli_query($conn, $sql);
+        $mid = array("");
+        $i = 0;
+        while($row = $result->fetch_assoc()){
+            $mid[$i] = $row['m_id'];
+            $sql = "insert into attendence(m_id,date,has_attented) values (".$row['m_id'].",'".date("y-m-d")."',0)"; 
+            if(mysqli_query($conn, $sql)){
+            
+            }
+        }
+        
+
+    }
+    function get_att($mid){
+        include "serverconfig.php";
+        $sql = "select count(has_attented) as attented from attendence where date between '".date("y-m-1")."' and '".date("y-m-30")."' and m_id = ".$mid." and has_attented = 1;"; 
+        $result = mysqli_query($conn, $sql);
+        $data = array();
+        $row = $result->fetch_assoc();
+        if(isset($row)){
+            $acount = $row['attented'];
+            if($acount == 0){
+               array_push($data,100);
+               array_push($data,0);
+               array_push($data,0);
+            }
+            $sql = "select count(has_attented) as notattented from attendence where date between '".date("y-m-1")."' and '".date("y-m-30")."' and m_id = ".$mid." and has_attented = 0;"; 
+            $result = mysqli_query($conn, $sql);
+            $row = $result->fetch_assoc();        
+            if(isset($row)){
+               $ascount = $row['notattented']+$acount;
+               array_push($data,(float) ($acount/$ascount)*100);
+               array_push($data, $row['notattented']);
+               array_push($data,$acount);
+            }
+        }else{
+        
+        }
+        
+        return $data;    
+    }
 ?>
         
