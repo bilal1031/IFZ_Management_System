@@ -139,7 +139,7 @@ echo '
                   <div class="container pl-3 pt-3" style="background-color:white;height:180px">
                     <div class="d-flex col-12 flex-row justify-content-between">
                         <h5>Name: '.$data['name'].'</h5>
-                        <h5>Contact Number: '.$data['contact_number'].'</h5>
+                        <h5>Contact Number: 0'.$data['contact_number'].'</h5>
                     </div>
                     <div class="d-flex flex-column col-12">
                     <h5>Joining Date: '.$data['reg_date'].'</h5>
