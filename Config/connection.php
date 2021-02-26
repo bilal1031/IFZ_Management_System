@@ -116,9 +116,19 @@
         $row = $result->fetch_assoc();
         $fid = $row['f_id'];
 
+        $sql = "SELECT 1 as verified from payment where m_id = ".$mid." and f_id = ".$fid."";
+        $result = mysqli_query($conn, $sql);
+        $row = $result->fetch_assoc();
+        if(!isset($row)){
+            $sql = 'INSERT INTO payment(m_id,f_id,is_paid) VALUES('.$mid.','.$fid.','.$value.')';
+            mysqli_query($conn, $sql);
+        }else{
+            echo "payment done";
+        }
+       
+
     
-        $sql = 'INSERT INTO payment(m_id,f_id,is_paid) VALUES('.$mid.','.$fid.','.$value.')';
-        mysqli_query($conn, $sql);
+     
             
                
         
@@ -345,12 +355,22 @@
         $mid = array("");
         $i = 0;
         while($row = $result->fetch_assoc()){
-         
-            $mid[$i] = $row['m_id'];
-            $sql = "insert into attendence(m_id,date,has_attented) values (".$row['m_id'].",'".date("y-m-d")."',0)"; 
-            if(mysqli_query($conn, $sql)){
-            
+            {
+                $sql = "select 1 as verified from attendence where m_id = ".$row['m_id']." and date = '".date("y-m-d")."';"; 
+                $result1 = mysqli_query($conn, $sql);
+                $row1 = $result1->fetch_assoc();
             }
+            if(!isset($row1)){     
+                $mid[$i] = $row['m_id'];     
+                $sql = "insert into attendence(m_id,date,has_attented) values (".$row['m_id'].",'".date("y-m-d")."',0)"; 
+                if(mysqli_query($conn, $sql)){
+                
+                }
+            }else{
+              
+            }
+            
+           
         }
         
 
