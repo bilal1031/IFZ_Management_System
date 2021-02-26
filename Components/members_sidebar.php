@@ -159,7 +159,7 @@ echo '
                      <h5>Current Month Attendence:</h5>
                      <div class="progress">
                      <div class="progress-bar" role="progressbar" aria-valuenow="70"
-                        aria-valuemin="0" aria-valuemax="100" style="width:'.$atinfo[0].'%;">
+                        aria-valuemin="0" aria-valuemax="100" style="background-color:#20a87a;width:'.$atinfo[0].'%;">
                         '.$atinfo[0].'% Presents('.$atinfo[2].') Absents('.$atinfo[1].')
                      </div>
                    </div>                    </div>
