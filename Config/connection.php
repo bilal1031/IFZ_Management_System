@@ -72,7 +72,16 @@
             $sql = 'SELECT m_id from member WHERE name = "'.$name.'"';
             $result = mysqli_query($conn, $sql);
             $row = $result->fetch_assoc();
-            set_payment(1,$row['m_id']);
+            $mid = $row['m_id'];
+
+            $sql = 'SELECT max(f_id) as f_id from fee';
+            $result = mysqli_query($conn, $sql);
+            $row = $result->fetch_assoc();
+            $fid = $row['f_id'];
+            $sql = 'INSERT INTO payment(m_id,f_id,is_paid,date) VALUES('.$mid.','.$fid.',1,"'.date('y-m-d').'")';
+            if(mysqli_query($conn, $sql)){
+                echo "payment saved";
+            }
             echo '<div class="alert alert-success container col-8 p-3" role="alert" style="bacground-color:orange">
                     Data Saved
                  </div>';   
@@ -121,18 +130,21 @@
         $result = mysqli_query($conn, $sql);
         $row = $result->fetch_assoc();
         if(!isset($row)){
-            $sql = 'INSERT INTO payment(m_id,f_id,is_paid) VALUES('.$mid.','.$fid.','.$value.')';
-            mysqli_query($conn, $sql);
-        }else{
-            echo "payment done";
-        }
-       
-
-    
-     
-            
-               
-        
+            $sql = 'select date as date from payment where m_id = '.$mid.' and f_id = '.($fid-1).';';
+            $result = mysqli_query($conn, $sql);   
+            $row = $result->fetch_assoc();      
+            if(isset($row)){   
+               $date = $row['date'];
+               $timestamp = strtotime($date);
+               $incre = date("d", $timestamp);
+               $nextdate = date('Y-m-d', strtotime($date."+".$incre." days"));
+               $sql = 'INSERT INTO payment(m_id,f_id,is_paid,date) VALUES('.$mid.','.$fid.','.$value.',"'.$nextdate.'")';
+               if(mysqli_query($conn, $sql)){
+                echo "payment done";
+               }
+           
+            }
+        }       
 
     }
     function add_fee($month,$year,$fee){
@@ -150,12 +162,24 @@
                 array_push($ids,$row['m_id']);
             }              
             for($x = 0;$x < sizeof($ids);$x++){
-                $sql = "insert into payment(m_id,f_id,is_paid) values (".$ids[$x].",(select max(f_id) from fee),0)";
-                if(mysqli_query($conn, $sql)){
+                $sql = 'select date as date from payment where m_id = '.$ids[$x].' and f_id = '.($count-1).';';
+                $result = mysqli_query($conn, $sql);   
+                $row = $result->fetch_assoc();      
+                if(isset($row)){   
+                   $date = $row['date'];
+                   $timestamp = strtotime($date);
+                   $incre = date("d", $timestamp);
+                   $nextdate = date('Y-m-d', strtotime($date."+".$incre." days"));
+                   $sql = 'INSERT INTO payment(m_id,f_id,is_paid,date) VALUES('.$ids[$x].','.$count.',0,"'.$nextdate.'")';               
+                   if(mysqli_query($conn, $sql)){
                     $payment = true;
-                }  else{
-                    $payment = false;
+                    }  else{
+                        $payment = false;
+                    }
+            
                 }
+                
+               
             }
         }else{
             
@@ -181,15 +205,27 @@
     }
     function get_cur_pay_info($id){
         include "serverconfig.php";
+        $sql = 'select date as date from payment where m_id = '.$id.' and f_id =  (select max(f_id)-1 from fee);';
+        $result = mysqli_query($conn, $sql);   
+        $row = $result->fetch_assoc();     
+        $nextdate = array() ;
+        if(isset($row)){   
+                   $date = $row['date'];
+                   $timestamp = strtotime($date);
+                   $incre = date("d", $timestamp);
+                   array_push($nextdate,date('Y-m-d', strtotime($date."+30 days")));             
+         }
         $sql = "SELECT is_paid from payment where f_id = (select max(f_id) from fee) and m_id=".$id.";";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
-            $row = $result->fetch_assoc();       
-        }else {
-            return false;
+            $row = $result->fetch_assoc();    
+            array_push($nextdate,1);    
+                             
+        }else {   
+            array_push($nextdate,0); 
+                      
         }
-    
-            return true;
+        return $nextdate; 
         
         
     }
@@ -214,11 +250,21 @@
             Members
             </a>';
             while($row = $result->fetch_assoc()) {
+                $sqldate = 'select date as date from payment where m_id = '.$row['m_id'].' and f_id =  (select max(f_id)-1 from fee);';
+                $resultdate = mysqli_query($conn, $sqldate);   
+                $rowdate = $resultdate->fetch_assoc();     
+                $nextdate ;
+                if(isset($row)){   
+                           $date = $rowdate['date'];
+                           $timestamp = strtotime($date);
+                           $incre = date("d", $timestamp);
+                           $nextdate = date('Y-m-d', strtotime($date."+30 days"));             
+                 }
                 echo '<a type="button" class="list-group-item list-group-item-action p-2" href="memberspage.php?member='.$row['m_id'].'">
                 <div class="d-flex flex-row justify-content-between align-items-center">
                     <div class="col-3 justify-content-between"><span>'.$row['name'].'</span></div>                 
-                    <div class="col-3 justify-content-between">
-                    <span><b>Fee:</b></span> ';
+                    <div class="col-5 justify-content-between">
+                    <span><b>Fee of <span>'.$nextdate.'</span>:</b></span> ';
                     if($type == 'paid'){                       
                        $ispaid = $row['is_paid'];
                     }else{

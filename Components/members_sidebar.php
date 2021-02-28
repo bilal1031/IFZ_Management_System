@@ -144,14 +144,15 @@ echo '
                     <div class="d-flex flex-column col-12">
                     <h5>Joining Date: '.$data['reg_date'].'</h5>
                     <div class="d-flex flex-row">
-                        <h5>Current month fee status:</h5>';
-                    if($pay){
+                        <h5>Fee status of <span>'.$pay[0].'</span> :</h5>';
+                    if($pay[1]){
                             echo '<button class=" btn btn-success ml-2" name="payment" disabled >Paid</button>';
                     }else{
                         echo '<form action="'.$_SERVER['PHP_SELF'].'?member='.$_GET['member'].'" method="post">
                                 <input name="pay" type="hidden" value="1"/>
                                 <button class=" btn btn-danger ml-2" name="payment">Not Paid</button>
-                              </form>';
+                              </form>
+                             ';
                     }
             $atinfo = get_att($_GET['member']);   
              echo' 
