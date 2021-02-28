@@ -23,7 +23,7 @@
     }
     function get_member($search){
         include "serverconfig.php";
-        $sql = "select member.* from member where name like '%".$search."%'";
+        $sql = "select member.* from member where name like '%".$search."%' or m_id = '".$search."';";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
             echo '  
@@ -93,7 +93,8 @@
             while($row = $result->fetch_assoc()) {
                 echo '<a type="button" class="list-group-item list-group-item-action p-2" href="'.$_SERVER['PHP_SELF'].'?member='.$row['m_id'].'">
                             <div class="d-flex flex-row justify-content-between align-items-center">
-                                <div class="col-3 justify-content-between"><span>'.$row['name'].'</span></div>                 
+                                <div class="col-3 justify-content-between"><span><b>'.$row['m_id'].':</b></span>
+                                <span class="m-2">'.$row['name'].'</span></div>                 
                                 <div class="col-3 justify-content-between">
                                 <span><b>Fee:</b></span> ';
                                 if($row['is_paid']){
@@ -201,7 +202,7 @@
                     and payment.f_id = (select max(f_id) from fee);';
                    
         }else{
-            $sql = "select member.name,m_id from member where m_id != all (select member.m_id from member inner join payment on member.m_id = payment.m_id and payment.is_paid = 0 and payment.f_id = (select max(f_id) from fee))";    
+            $sql = "select member.name,m_id from member where m_id != all (select member.m_id from member inner join payment on member.m_id = payment.m_id and payment.is_paid = 1 and payment.f_id = (select max(f_id) from fee))";    
         }
 
         $result = mysqli_query($conn, $sql);
