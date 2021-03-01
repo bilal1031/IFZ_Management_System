@@ -1,4 +1,7 @@
 <?php
+
+    include "serverconfig.php";
+
     function get_attendence($mid){
         include "serverconfig.php";
         $sql = "select 1 as verified from attendence where m_id= ".$mid." and date = '".date('y-m-d')."'";
