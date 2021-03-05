@@ -216,8 +216,10 @@
                    $date = $row['date'];
                    $timestamp = strtotime($date);
                    $incre = date("d", $timestamp);
-                   array_push($nextdate,date('Y-m-d', strtotime($date."+30 days")));             
-         }
+                   array_push($nextdate,date('Y-m-d', strtotime($date."+30 days")));          
+        }else{
+                   array_push($nextdate,date('Y-m-d', strtotime(date('Y-m-d')."+30 days")));     
+        }
         $sql = "SELECT is_paid from payment where f_id = (select max(f_id) from fee) and m_id=".$id.";";
         $result = mysqli_query($conn, $sql);
         if (mysqli_num_rows($result) > 0) {
@@ -257,11 +259,13 @@
                 $resultdate = mysqli_query($conn, $sqldate);   
                 $rowdate = $resultdate->fetch_assoc();     
                 $nextdate ;
-                if(isset($row)){   
+                if(isset($rowdate)){   
                            $date = $rowdate['date'];
                            $timestamp = strtotime($date);
                            $incre = date("d", $timestamp);
                            $nextdate = date('Y-m-d', strtotime($date."+30 days"));             
+                 }else{
+                           $nextdate = date('Y-m-d', strtotime(date('Y-m-d')."+30 days"));    
                  }
                 echo '<a type="button" class="list-group-item list-group-item-action p-2" href="memberspage.php?member='.$row['m_id'].'">
                 <div class="d-flex flex-row justify-content-between align-items-center">
